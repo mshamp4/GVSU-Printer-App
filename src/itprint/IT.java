@@ -14,7 +14,7 @@ import javax.swing.JMenuItem;
  * Description goes here
  * 
  * @author Matthew Shampine
- * @version 1.0
+ * @version 2.0
  */
 public class IT {
 
@@ -42,7 +42,6 @@ public class IT {
 	/** A JFrame to add elements to. */
 	private static JFrame frame;
 
-	// change this code later
 	private static ImageIcon mobileIcon = new ImageIcon("src/mobileIcon.png");
 
 	/**
@@ -52,12 +51,10 @@ public class IT {
 	public static void main(final String[] args) {
 		board = new ITGUI("DEVOS");
 		frame = new JFrame("GVSU IT Print");
-		// frame.setSize(600, 600);
 		frame.setResizable(false);
 		frame.add(board);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setIconImage(mobileIcon.getImage());
-		// frame.setLocationRelativeTo(null);
 
 		/**
 		 * This class is used for the different menu options.

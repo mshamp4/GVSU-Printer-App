@@ -17,6 +17,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -36,6 +37,12 @@ public class ITGUI extends JPanel implements ActionListener {
 	private JTextField room;
 
 	private ImageIcon printerIcon = new ImageIcon("src/printerIcon.png");
+
+	private ImageIcon disabledIcon = new ImageIcon("src/disabledIcon.png");
+
+	private ImageIcon checkmark = new ImageIcon("src/checkmark.png");
+
+	private ImageIcon disabledMark = new ImageIcon("src/disabledMark.png");
 
 	private Box box;
 
@@ -75,19 +82,22 @@ public class ITGUI extends JPanel implements ActionListener {
 	}
 
 	private void addPrinters(int numPrinters) {
-		// JPanel bottom = new JPanel(new GridBagLayout());
-		// bottom.setBackground(Color.lightGray);
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(15, 20, 10, 20);
 
 		int count = 0;
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 5; j++) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
 				if (numPrinters == count) {
 					break;
 				}
 				JButton printer = new JButton(pReport.getPrinters().get(count).getPrntName());
-				printer.setIcon(printerIcon);
+				printer.addActionListener(this);
+				if (pReport.getPrinters().get(count).status()) {
+					printer.setIcon(printerIcon);
+				} else {
+					printer.setIcon(disabledIcon);
+				}
 				printer.setBackground(Color.lightGray);
 				printer.setBorder(null);
 				c.gridx = j;
@@ -116,8 +126,22 @@ public class ITGUI extends JPanel implements ActionListener {
 		bottom.repaint();
 	}
 
+	private void printerInfo(String prntName) {
+		int count = 0;
+		while (!prntName.equals(pReport.getPrinters().get(count).getPrntName())) {
+			count++;
+		}
+		if (pReport.getPrinters().get(count).status()) {
+			JOptionPane.showMessageDialog(null, pReport.getPrinters().get(count).toString(), "Printer - " + prntName,
+					JOptionPane.INFORMATION_MESSAGE, checkmark);
+		} else {
+			JOptionPane.showMessageDialog(null, pReport.getPrinters().get(count).toString(), "Printer - " + prntName,
+					JOptionPane.INFORMATION_MESSAGE, disabledMark);
+		}
+	}
+
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		// TODO Auto-generated method stub
+		printerInfo(e.getActionCommand());
 	}
 }

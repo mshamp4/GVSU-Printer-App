@@ -14,7 +14,7 @@ public class Printer {
 		setPrntName(prntName);
 		setRoomLocation(roomLoc);
 		setDirectPrint(false);
-		setGvPrint(false);
+		setGvPrint(true);
 	}
 
 	public String getPrntName() {
@@ -47,5 +47,26 @@ public class Printer {
 
 	public void setGvPrint(boolean gvPrint) {
 		this.gvPrint = gvPrint;
+	}
+	
+	public boolean status() {
+		return (isDirectPrint() && isGvPrint());
+	}
+	
+	public String toString() {
+		String dPrnt = "Disabled";
+		String gvPrnt = "Disabled";
+		String status = "Not working";
+		if (isDirectPrint()) {
+			dPrnt = "Enabled";
+		}
+		if (isGvPrint()) {
+			gvPrnt = "Enabled";
+		}
+		if (status()) {
+			status = "Working";
+		}
+		return "Status: " + status + "\n" + "Room location: " + roomLoc + "\n" +
+				"Direct Print - " + dPrnt + "\n" + "GV Print - " + gvPrnt;
 	}
 }
