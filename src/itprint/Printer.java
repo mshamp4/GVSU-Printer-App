@@ -1,5 +1,7 @@
 package itprint;
 
+import java.util.Random;
+
 public class Printer {
 
 	private String prntName;
@@ -11,9 +13,15 @@ public class Printer {
 	private boolean gvPrint;
 
 	public Printer(String prntName, String roomLoc) {
+		Random r = new Random();
+		int n = r.nextInt(2) + 1;
+		boolean random = false;
+		if (n == 1) {
+			random = true;
+		}
 		setPrntName(prntName);
 		setRoomLocation(roomLoc);
-		setDirectPrint(false);
+		setDirectPrint(random);
 		setGvPrint(true);
 	}
 
