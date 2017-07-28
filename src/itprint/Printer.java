@@ -60,7 +60,7 @@ public class Printer {
 	public boolean status() {
 		return (isDirectPrint() && isGvPrint());
 	}
-	
+		
 	public String toString() {
 		String dPrnt = "Disabled";
 		String gvPrnt = "Disabled";
