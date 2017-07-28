@@ -135,8 +135,12 @@ public class ITGUI extends JPanel implements ActionListener {
 	}
 
 	private void printerInformation(String prntName) {
+		// change to a for loop
 		int count = 0;
 		while (!prntName.equals(pReport.getPrinters().get(count).getPrntName())) {
+			if (count >= pReport.getPrinters().size()) {
+				break;
+			}
 			count++;
 		}
 
@@ -161,14 +165,20 @@ public class ITGUI extends JPanel implements ActionListener {
 		panel.add(info);
 		return panel;
 	}
+	
+//	enabledD.setActionCommand("enabledD");
 
 	private JComponent makeSettingsPanel(Printer currentPrnt) {
 		JLabel dPrnt = new JLabel("Direct Print");
 		JLabel gvPrnt = new JLabel("GV Print");
 		JRadioButton enabledD = new JRadioButton("Enabled");
-		JRadioButton enabledG = new JRadioButton("Enabled");
+		enabledD.addActionListener(this);
 		JRadioButton disabledD = new JRadioButton("Disabled");
+		disabledD.addActionListener(this);
+		JRadioButton enabledG = new JRadioButton("Enabled");
+		enabledG.addActionListener(this);
 		JRadioButton disabledG = new JRadioButton("Disabled");
+		disabledG.addActionListener(this);
 		ButtonGroup dPrntGroup = new ButtonGroup();
 		ButtonGroup gPrntGroup = new ButtonGroup();
 		dPrntGroup.add(enabledD);
@@ -253,5 +263,6 @@ public class ITGUI extends JPanel implements ActionListener {
 	public void actionPerformed(final ActionEvent e) {
 		// printerInfo(e.getActionCommand());
 		printerInformation(e.getActionCommand());
+		System.out.println(e.getActionCommand());
 	}
 }
