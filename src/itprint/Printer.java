@@ -11,6 +11,8 @@ public class Printer {
 	private boolean directPrint;
 
 	private boolean gvPrint;
+	
+	private boolean update;
 
 	public Printer(String prntName, String roomLoc) {
 		Random r = new Random();
@@ -23,6 +25,7 @@ public class Printer {
 		setRoomLocation(roomLoc);
 		setDirectPrint(random);
 		setGvPrint(true);
+		setUpdate(false);
 	}
 
 	public String getPrntName() {
@@ -76,5 +79,13 @@ public class Printer {
 		}
 		return "Status: " + status + "\n" + "Room location: " + roomLoc + "\n" +
 				"Direct Print - " + dPrnt + "\n" + "GV Print - " + gvPrnt;
+	}
+
+	public boolean isUpdate() {
+		return update;
+	}
+
+	public void setUpdate(boolean update) {
+		this.update = update;
 	}
 }

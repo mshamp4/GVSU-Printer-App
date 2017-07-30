@@ -51,8 +51,16 @@ public class ITGUI extends JPanel implements ActionListener {
 	private ImageIcon disabledMark = new ImageIcon("src/disabledMark.png");
 
 	private ImageIcon settingsIcon = new ImageIcon("src/settingsIcon.png");
+	
+	private ImageIcon updateIcon = new ImageIcon("src/updateIcon.png");
 
 	private Box box;
+
+	private int currentIndex;
+		
+	private JTabbedPane prntPane;
+	
+	private JLabel info;
 
 	public ITGUI(String prntName) {
 		pReport = new PrinterReport(prntName);
@@ -106,6 +114,9 @@ public class ITGUI extends JPanel implements ActionListener {
 				} else {
 					printer.setIcon(disabledIcon);
 				}
+				if (pReport.getPrinters().get(count).isUpdate()) {
+					printer.setIcon(updateIcon);
+				}
 				printer.setBackground(Color.lightGray);
 				printer.setBorder(null);
 				c.gridx = j;
@@ -134,58 +145,73 @@ public class ITGUI extends JPanel implements ActionListener {
 		bottom.repaint();
 	}
 
-	private void printerInformation(String prntName) {
-		// change to a for loop
+	private int getPrinterIndex(String prntName) {
+		int size = pReport.getPrinters().size();
 		int count = 0;
-		while (!prntName.equals(pReport.getPrinters().get(count).getPrntName())) {
-			if (count >= pReport.getPrinters().size()) {
-				break;
+		for (int i = 0; i <= size; i++) {
+			if (!prntName.equals(pReport.getPrinters().get(count).getPrntName())) {
+				count = i;
 			}
-			count++;
 		}
+		if (count == size) {
+			return -1;
+		}
+		return count;
+	}
 
-		Printer currentPrnt = pReport.getPrinters().get(count);
-		ImageIcon icon = getStatusIcon(currentPrnt.status());
+//	private String getPrinterName() {
+//		return pReport.getPrinters().get(currentIndex).getPrntName();
+//	}
 
-		JTabbedPane prntPane = new JTabbedPane();
-		JComponent info = makeInfoPanel(currentPrnt.toString());
-		JComponent edit = makeSettingsPanel(currentPrnt);
-		prntPane.addTab("Information", icon, info);
-		prntPane.addTab("Update Printer", settingsIcon, edit);
-		JOptionPane.showMessageDialog(null, prntPane, "Printer - " + prntName, JOptionPane.PLAIN_MESSAGE);
+	private void printerInformation(String prntName) {
+		int index = getPrinterIndex(prntName);
+		setCurrentIndex(index);
 
+		if (index != -1) {
+			Printer currentPrnt = pReport.getPrinters().get(index);
+			ImageIcon icon = getStatusIcon(currentPrnt.status());
+
+			prntPane = new JTabbedPane();
+			JComponent info = makeInfoPanel(currentPrnt.toString());
+			JComponent edit = makeSettingsPanel(currentPrnt);
+			prntPane.addTab("Information", icon, info);
+			prntPane.addTab("Update Printer", settingsIcon, edit);
+			JOptionPane.showMessageDialog(null, prntPane, "Printer - " + prntName, JOptionPane.PLAIN_MESSAGE);
+		}
 	}
 
 	// difference between private and protected
 	private JComponent makeInfoPanel(String prntStatus) {
 		JPanel panel = new JPanel(false);
-		JLabel info = getPrinterStatus(prntStatus);
+		info = getPrinterStatus(prntStatus);
 		info.setHorizontalAlignment(JLabel.CENTER);
 		panel.setLayout(new GridBagLayout());
 		panel.add(info);
 		return panel;
 	}
 	
-//	enabledD.setActionCommand("enabledD");
-
 	private JComponent makeSettingsPanel(Printer currentPrnt) {
 		JLabel dPrnt = new JLabel("Direct Print");
 		JLabel gvPrnt = new JLabel("GV Print");
 		JRadioButton enabledD = new JRadioButton("Enabled");
 		enabledD.addActionListener(this);
+		enabledD.setActionCommand("enabledD");
 		JRadioButton disabledD = new JRadioButton("Disabled");
 		disabledD.addActionListener(this);
+		disabledD.setActionCommand("disabledD");
 		JRadioButton enabledG = new JRadioButton("Enabled");
 		enabledG.addActionListener(this);
+		enabledG.setActionCommand("enabledG");
 		JRadioButton disabledG = new JRadioButton("Disabled");
 		disabledG.addActionListener(this);
+		disabledG.setActionCommand("disabledG");
 		ButtonGroup dPrntGroup = new ButtonGroup();
 		ButtonGroup gPrntGroup = new ButtonGroup();
 		dPrntGroup.add(enabledD);
 		dPrntGroup.add(disabledD);
 		gPrntGroup.add(enabledG);
 		gPrntGroup.add(disabledG);
-		
+
 		if (currentPrnt.isDirectPrint()) {
 			enabledD.setSelected(true);
 		} else {
@@ -216,7 +242,7 @@ public class ITGUI extends JPanel implements ActionListener {
 				c.gridx = i;
 				c.gridy = j;
 				rdoBttns.add(rdoBttn.get(count), c);
-				count ++;
+				count++;
 			}
 		}
 		JPanel panel = new JPanel(new BorderLayout());
@@ -231,6 +257,13 @@ public class ITGUI extends JPanel implements ActionListener {
 		temp = temp.replaceAll("[\\t\\n\\r]", "<br>");
 		JLabel info = new JLabel(temp);
 		return info;
+	}
+	
+	private String modifyStatusString(String status) {
+		String temp = "<html>" + status;
+		temp = temp.concat("<html>");
+		temp = temp.replaceAll("[\\t\\n\\r]", "<br>");
+		return temp;
 	}
 
 	private ImageIcon getStatusIcon(boolean status) {
@@ -258,11 +291,70 @@ public class ITGUI extends JPanel implements ActionListener {
 	// + prntName,
 	// JOptionPane.INFORMATION_MESSAGE, getStatusIcon(currentPrnt.status()));
 	// }
+	
+	private void setTabIcon() {
+		ImageIcon temp = disabledMark;
+		if (pReport.getPrinters().get(currentIndex).status()) {
+			temp = checkmark;
+		}
+		prntPane.setIconAt(0, temp);
+	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		// printerInfo(e.getActionCommand());
+		// TO-DO Change text on printer information tab
 		printerInformation(e.getActionCommand());
-		System.out.println(e.getActionCommand());
+
+		if (e.getActionCommand().equals("enabledD")) {
+			if (getPrinterIndex(e.getActionCommand()) == -1) {
+				pReport.getPrinters().get(getCurrentIndex()).setDirectPrint(true);
+				pReport.getPrinters().get(getCurrentIndex()).setUpdate(true);
+				removePrinters();
+				addPrinters(pReport.getPrinters().size());
+				info.setText(modifyStatusString(pReport.getPrinters().get(getCurrentIndex()).toString()));
+				setTabIcon();
+			}
+		}
+		if (e.getActionCommand().equals("disabledD")) {
+			if (getPrinterIndex(e.getActionCommand()) == -1) {
+				pReport.getPrinters().get(getCurrentIndex()).setDirectPrint(false);
+				pReport.getPrinters().get(getCurrentIndex()).setUpdate(true);
+				removePrinters();
+				addPrinters(pReport.getPrinters().size());
+				info.setText(modifyStatusString(pReport.getPrinters().get(getCurrentIndex()).toString()));
+				setTabIcon();
+			}
+		}
+		if (e.getActionCommand().equals("enabledG")) {
+			if (getPrinterIndex(e.getActionCommand()) == -1) {
+				pReport.getPrinters().get(getCurrentIndex()).setGvPrint(true);
+				pReport.getPrinters().get(getCurrentIndex()).setUpdate(true);
+				removePrinters();
+				addPrinters(pReport.getPrinters().size());
+				info.setText(modifyStatusString(pReport.getPrinters().get(getCurrentIndex()).toString()));
+				setTabIcon();
+			}
+		}
+		if (e.getActionCommand().equals("disabledG")) {
+			if (getPrinterIndex(e.getActionCommand()) == -1) {
+				pReport.getPrinters().get(getCurrentIndex()).setGvPrint(false);
+				pReport.getPrinters().get(getCurrentIndex()).setUpdate(true);
+				removePrinters();
+				addPrinters(pReport.getPrinters().size());
+				info.setText(modifyStatusString(pReport.getPrinters().get(getCurrentIndex()).toString()));
+				setTabIcon();
+			}
+		}
+	}
+
+	public int getCurrentIndex() {
+		return currentIndex;
+	}
+
+	public void setCurrentIndex(int currentIndex) {
+		if (currentIndex != -1) {
+			this.currentIndex = currentIndex;
+		}
 	}
 }
