@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,9 +54,13 @@ public class ITGUI extends JPanel implements ActionListener {
 	private ImageIcon settingsIcon = new ImageIcon("src/settingsIcon.png");
 	
 	private ImageIcon updateIcon = new ImageIcon("src/updateIcon.png");
+	
+	private ImageIcon refreshIcon = new ImageIcon("src/refreshIcon.png");
 
 	private Box box;
 
+	private JButton subReport;
+	
 	private int currentIndex;
 		
 	private JTabbedPane prntPane;
@@ -67,6 +72,22 @@ public class ITGUI extends JPanel implements ActionListener {
 		box = Box.createVerticalBox();
 		setBackground(Color.lightGray);
 		add(box);
+		Font bttnFont = new Font("Verdana", Font.BOLD, 14);
+		JPanel settingsInformation = new JPanel(false);
+		settingsInformation.setBackground(Color.lightGray);
+		JLabel fill = new JLabel("");
+		GridLayout settingsLayout = new GridLayout(0, 3);
+		subReport = new JButton("Submit Report", refreshIcon);
+		subReport.addActionListener(this);
+		subReport.setFont(bttnFont);
+		subReport.setBackground(Color.lightGray);
+		subReport.setBorder(null);
+		subReport.setEnabled(false);
+		settingsInformation.setLayout(settingsLayout);
+		settingsInformation.add(fill);
+		settingsInformation.add(subReport);
+		box.add(settingsInformation);
+		box.add(Box.createVerticalStrut(8));
 
 		try {
 			BufferedImage gvLogo = ImageIO.read(new File("src/gvsuLogo.png"));
@@ -79,7 +100,7 @@ public class ITGUI extends JPanel implements ActionListener {
 			// e.printStackTrace();
 			// work on this catch statement
 		}
-
+		
 		Font textFont = new Font("Verdana", Font.BOLD, 22);
 
 		room = new JTextField(prntName);
@@ -302,8 +323,6 @@ public class ITGUI extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		// printerInfo(e.getActionCommand());
-		// TO-DO Change text on printer information tab
 		printerInformation(e.getActionCommand());
 
 		if (e.getActionCommand().equals("enabledD")) {
@@ -345,6 +364,18 @@ public class ITGUI extends JPanel implements ActionListener {
 				info.setText(modifyStatusString(pReport.getPrinters().get(getCurrentIndex()).toString()));
 				setTabIcon();
 			}
+		}
+		if (pReport.updated()) {
+			subReport.setEnabled(true);
+			subReport.setToolTipText("<Html>Printer settings modified, please "
+					+ "update all<br>printers and an email will be sent with the<br>current printer info.</html>");
+		}
+		if (e.getActionCommand().equals("Submit Report")) {
+			pReport.setUpdated();
+			subReport.setEnabled(false);
+			subReport.setToolTipText(null);
+			removePrinters();
+			addPrinters(pReport.getPrinters().size());
 		}
 	}
 

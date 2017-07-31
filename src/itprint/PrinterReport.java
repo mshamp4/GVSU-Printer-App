@@ -88,6 +88,23 @@ public class PrinterReport {
 		temp.add(s5);
 		setPrinters(temp);
 	}
+	
+	public boolean updated() {
+		for (Printer temp: printers) {
+			if (temp.isUpdate()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void setUpdated() {
+		for (Printer temp: printers) {
+			if (temp.isUpdate()) {
+				temp.setUpdate(false);
+			}
+		}
+	}
 
 	public ArrayList<Printer> getPrinters() {
 		return printers;
